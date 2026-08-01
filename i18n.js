@@ -40,11 +40,6 @@
     Array.from(node.childNodes).filter(child => child.nodeType === Node.TEXT_NODE).forEach(child => child.remove());
     node.appendChild(document.createTextNode(` ${value}`));
   };
-  const safeStorage = {
-    get() { try { return window.localStorage.getItem("jg3d-language"); } catch { return null; } },
-    set(value) { try { window.localStorage.setItem("jg3d-language", value); } catch { /* file:// may block storage; language switching still works */ } }
-  };
-
   function applyLanguage(language) {
     const t = translations[language] || translations.en;
     document.documentElement.lang = t.lang;
@@ -80,13 +75,16 @@
     const whatsapp = one(".whatsapp-button"); if (whatsapp) whatsapp.href = `https://wa.me/5493517887769?text=${encodeURIComponent(t.message)}`;
     const contactNotes = all(".contact-actions>span"); if (contactNotes[0]) contactNotes[0].textContent = t.direct; if (contactNotes[1]) contactNotes[1].textContent = t.global;
     setText(".footer>p", t.footer);
-    all("[data-language]").forEach(button => { const active = button.dataset.language === language; button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active)); });
-    safeStorage.set(language);
+    all("[data-language]").forEach(link => {
+      const active = link.dataset.language === language;
+      link.classList.toggle("active", active);
+      if (active) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    all("[data-language]").forEach(button => button.addEventListener("click", () => applyLanguage(button.dataset.language)));
-    const saved = safeStorage.get();
-    applyLanguage(["en", "es", "pt"].includes(saved) ? saved : "en");
+    const pageLanguage = document.documentElement.dataset.siteLanguage;
+    applyLanguage(["en", "es", "pt"].includes(pageLanguage) ? pageLanguage : "en");
   });
 })();

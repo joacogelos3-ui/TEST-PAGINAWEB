@@ -73,6 +73,7 @@
 
   const NEW_DAYS = 30;
   const state = { lang: "en", chip: "all", query: "", sort: "recent" };
+  const assetPrefix = document.documentElement.dataset.assetPrefix || "";
   const $ = s => document.querySelector(s);
 
   const normalize = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -120,7 +121,7 @@
       <a class="cat-img" href="${p.u}" target="_blank" rel="noreferrer">
         ${isNew(p) ? `<span class="cat-badge">${s.isNew}</span>` : ""}
         <span class="cat-photos">${s.photos(p.g)}</span>
-        <img src="${p.img}" alt="${p.n.replace(/"/g, "&quot;")}" loading="lazy">
+        <img src="${assetPrefix}${p.img}" alt="${p.n.replace(/"/g, "&quot;")}" loading="lazy">
       </a>
       <div class="cat-body">
         <small>${label}</small>
@@ -174,12 +175,8 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    try { state.lang = ["en", "es", "pt"].includes(localStorage.getItem("jg3d-language")) ? localStorage.getItem("jg3d-language") : "en"; } catch { /* file:// */ }
-    // i18n.js ya maneja nav/menú; acá solo reaccionamos para re-renderizar los textos del catálogo
-    document.querySelectorAll("[data-language]").forEach(b => b.addEventListener("click", () => {
-      state.lang = b.dataset.language;
-      render();
-    }));
+    const pageLanguage = document.documentElement.dataset.siteLanguage;
+    state.lang = ["en", "es", "pt"].includes(pageLanguage) ? pageLanguage : "en";
     $("#cat-search").addEventListener("input", e => { state.query = e.target.value; render(); });
     $("#cat-sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
     $("#cat-empty-clear").addEventListener("click", e => {
