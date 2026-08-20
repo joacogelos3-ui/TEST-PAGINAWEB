@@ -36,9 +36,12 @@
     @keyframes progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
     .status{font:400 10px "Space Mono",monospace;color:var(--muted);line-height:1.6;margin:12px 0 0}
     .secondary{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-top:28px;padding-top:22px;border-top:1px solid var(--line);font:700 10px "Space Mono",monospace;text-transform:uppercase}
-    .secondary span{color:var(--muted);font-weight:400}
+    .secondary-brand,.secondary a{display:flex;align-items:center;gap:9px}
+    .secondary-brand span{color:var(--muted);font-weight:400}
     .secondary a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--red);padding-bottom:3px}
-    @media(max-width:520px){body{padding:14px}.card{padding:30px 24px}.brand img{width:118px}.brand span{font-size:8px}.secondary{align-items:flex-start;flex-direction:column}}
+    .argentina-flag{width:25px;height:17px;flex:0 0 auto;border:1px solid #0b0c0d22}
+    .instagram-icon{width:17px;height:17px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8}
+    @media(max-width:520px){body{padding:14px}.card{padding:30px 24px}.brand img{width:118px}.brand span{font-size:8px}.secondary{gap:10px;font-size:8px}.secondary-brand,.secondary a{gap:6px}.argentina-flag{width:22px;height:15px}.instagram-icon{width:15px;height:15px}}
     @media(prefers-reduced-motion:reduce){.progress i{animation:none;transform:scaleX(1)}.button{transition:none}}
   </style>
 </head>
@@ -58,54 +61,32 @@
     <div class="progress" aria-hidden="true"><i></i></div>
     <p class="status" id="status">If WhatsApp does not open automatically, use the button above.</p>
     <div class="secondary">
-      <span>JG3D Works · STL files only</span>
-      <a href="https://www.instagram.com/jg3d.works/" rel="noopener noreferrer">Instagram ↗</a>
+      <div class="secondary-brand">
+        <svg class="argentina-flag" viewBox="0 0 30 20" role="img" aria-label="Argentina">
+          <rect width="30" height="6.67" fill="#74acdf"/>
+          <rect y="6.67" width="30" height="6.66" fill="#fff"/>
+          <rect y="13.33" width="30" height="6.67" fill="#74acdf"/>
+          <circle cx="15" cy="10" r="2.1" fill="#f6b40e"/>
+        </svg>
+        <span>JG3D Works · STL files only</span>
+      </div>
+      <a href="https://www.instagram.com/jg3d.works/" rel="noopener noreferrer">
+        <svg class="instagram-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <circle cx="12" cy="12" r="4.2"/>
+          <circle cx="17.4" cy="6.7" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        <span>Instagram ↗</span>
+      </a>
     </div>
   </main>
   <script>
     (() => {
       const WHATSAPP_NUMBER = "5493517887769";
-      const copy = {
-        en: {
-          eyebrow: "Direct contact",
-          title: "Opening<br><span>WhatsApp…</span>",
-          lead: "You will be redirected to our current contact number.",
-          button: "Continue to WhatsApp",
-          status: "If WhatsApp does not open automatically, use the button above.",
-          preview: "Preview mode: automatic redirection is paused.",
-          message: "Hello JG3D, I found your designs on Cults3D and would like to make an inquiry."
-        },
-        es: {
-          eyebrow: "Contacto directo",
-          title: "Abriendo<br><span>WhatsApp…</span>",
-          lead: "Te redirigiremos a nuestro número de contacto actual.",
-          button: "Continuar a WhatsApp",
-          status: "Si WhatsApp no se abre automáticamente, usá el botón superior.",
-          preview: "Modo de vista previa: la redirección automática está pausada.",
-          message: "Hola JG3D, encontré sus diseños en Cults3D y quisiera hacer una consulta."
-        },
-        pt: {
-          eyebrow: "Contato direto",
-          title: "Abrindo<br><span>WhatsApp…</span>",
-          lead: "Você será redirecionado para o nosso número de contato atual.",
-          button: "Continuar para o WhatsApp",
-          status: "Se o WhatsApp não abrir automaticamente, use o botão acima.",
-          preview: "Modo de visualização: o redirecionamento automático está pausado.",
-          message: "Olá JG3D, encontrei seus projetos no Cults3D e gostaria de fazer uma consulta."
-        }
-      };
-      const requested = new URLSearchParams(location.search).get("lang");
-      const browserLanguage = (navigator.language || "en").slice(0, 2).toLowerCase();
-      const language = copy[requested] ? requested : (copy[browserLanguage] ? browserLanguage : "en");
-      const text = copy[language];
-      const target = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text.message)}`;
+      const WHATSAPP_MESSAGE = "Hello JG3D, I found your designs on Cults3D and would like to make an inquiry.";
+      const target = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
       const preview = new URLSearchParams(location.search).get("preview") === "1";
-      document.documentElement.lang = language;
-      document.getElementById("eyebrow").textContent = text.eyebrow;
-      document.getElementById("page-title").innerHTML = text.title;
-      document.getElementById("lead").textContent = text.lead;
-      document.getElementById("button-text").textContent = text.button;
-      document.getElementById("status").textContent = preview ? text.preview : text.status;
+      if (preview) document.getElementById("status").textContent = "Preview mode: automatic redirection is paused.";
       document.getElementById("whatsapp-link").href = target;
       if (preview) {
         document.body.classList.add("preview");
